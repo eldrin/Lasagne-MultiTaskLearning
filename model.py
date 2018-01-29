@@ -58,12 +58,13 @@ def build(layer_heads, params):
             [x, y], loss_vl, allow_input_downcast=True)
         fns[target['name']]['acc'] = theano.function(
             [x, y], acc_vl, allow_input_downcast=True)
-
-    l_feat = L.get_all_layers(
-        layer_heads[params['targets'][0]['name']])[-2]
-    fns[target['name']]['transform'] = theano.function(
-        [x], L.get_output(l_feat, inputs=x, deterministic=True),
-        allow_input_downcast=True)
+        fns[target['name']]['transform'] = theano.function(
+            [x],
+            L.get_output(
+                L.get_all_layers(layer_heads[target['name']])[-2],
+                inputs=x, deterministic=True
+            ),
+            allow_input_downcast=True)
 
     return fns, layer_heads
 
