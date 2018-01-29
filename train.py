@@ -2,12 +2,7 @@ import numpy as np
 from tqdm import trange
 from data import prepare_batch, random_crop
 from sklearn.preprocessing import LabelBinarizer
-
-
-def shuffle_ids(id_list, id_hash):
-    return np.random.permutation(
-        [id_hash[x] for x in id_list if x in id_hash])
-
+from utils import shuffle_ids
 
 def train(model, data, params, tblogger=None):
     """"""

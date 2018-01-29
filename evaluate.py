@@ -8,7 +8,7 @@ from sklearn.metrics import (f1_score,
                              confusion_matrix)
 from data import prepare_batch, random_crop
 from sklearn.preprocessing import LabelEncoder, LabelBinarizer
-from utils import load_check_point
+from utils import load_check_point, shuffle_ids
 
 
 def log_loss(y_true, y_pred):

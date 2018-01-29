@@ -1,8 +1,15 @@
 import os
 import numpy as np
 from sklearn.externals import joblib
+
+import lasagne
 from lasagne import layers as L
 from model import build, network
+
+
+def shuffle_ids(id_list, id_hash):
+    return np.random.permutation(
+        [id_hash[x] for x in id_list if x in id_hash])
 
 
 def get_class_weight(y):

@@ -79,14 +79,15 @@ if __name__ == "__main__":
         epsilon=1e-6,
         beta=1e-5,
         dur=44,
-        n_epochs=1000,
+        n_epochs=50,
         batch_sz=64,
         targets=[
-            {'name':'tg', 'n_out':16, 'prob': 1./3},
-            {'name':'adm', 'n_out':40, 'prob': 1./3},
-            {'name':'am', 'n_out':40, 'prob': 1./3}
+            {'name':'tg', 'n_out':16, 'prob': 1./2},
+            {'name':'po', 'n_out':40, 'prob': 1./2}
+            # {'name':'adm', 'n_out':40, 'prob': 1./3},
+            # {'name':'am', 'n_out':40, 'prob': 1./3}
         ],
-        train_id='mtl_tg_adm_am'
+        train_id='mtl_tg_po2'
     )
     results[tid] = {'f1': f1, 'll': ll}
     print results
