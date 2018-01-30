@@ -11,7 +11,7 @@ from train import train
 from utils import save_check_point, get_class_weight
 from evaluate import evaluate, test
 
-DATA_PATH = '/mnt/bulk/WWW_FMA/mel_spec/'
+DATA_PATH = '/mnt/bulk2/WWW_FMA/mel_spec/'
 TRAIN_DATA_FN = os.path.join(DATA_PATH, 'train.h5')
 TEST_DATA_FN = os.path.join(DATA_PATH, 'test.h5')
 SCALER_FN = './data/sclr_44k_logmel128.dat.gz'
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             {'name': 'am', 'n_out': 40, 'prob': 1./2}
         ],
         shuffle=False,
-        train_id='mtl_tg_am_2'
+        train_id='mtl_tg_am_@2'
     )
     results[tid] = {'f1': f1, 'll': ll}
     print results
