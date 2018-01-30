@@ -13,14 +13,13 @@ from train import train
 from utils import save_check_point, load_check_point, get_class_weight
 from evaluate import evaluate, test
 
-DATA_PATH = '/mnt/bulk2/WWW_FMA/mel_spec/'
-TRAIN_DATA_FN = os.path.join(DATA_PATH, 'train.h5')
-TEST_DATA_FN = os.path.join(DATA_PATH, 'test.h5')
+
 SCALER_FN = './data/sclr_44k_logmel128.dat.gz'
 
 
 def ex(learning_rate, split, epsilon, beta, dur,
-       n_epochs, targets, batch_sz, shuffle, train_id=None):
+       n_epochs, targets, batch_sz, shuffle, data_path,
+       train_id=None):
     """"""
     if train_id is None:
         train_id = uuid.uuid4()
@@ -28,7 +27,7 @@ def ex(learning_rate, split, epsilon, beta, dur,
     logger = tblog.Logger('runs/{}'.format(train_id))
 
     params = {
-        'data_fn': TRAIN_DATA_FN,
+        'data_fn': os.path.join(data_path, 'train.h5'),
         'scaler': SCALER_FN,
         'split_fn': split,
         'learning_rate': learning_rate,
@@ -64,7 +63,8 @@ def ex(learning_rate, split, epsilon, beta, dur,
 
         if params['prepare_submission']:
             # predict test dataset and prepare submission
-            test(mdl, hf, train_id, TEST_DATA_FN, params)
+            test(mdl, hf, train_id,
+                 os.path.join(data_path, 'test.h5'), params)
 
     return train_id, f1, ll
 
