@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from theano import tensor as T
 from lasagne import layers as L
 from lasagne import nonlinearities as nl
 from sklearn.externals import joblib
@@ -31,11 +30,14 @@ def deep_cnn_2d(params):
         pool_sz = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
     else:
         conv_strd = [(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
-        pool_sz = [(1, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n        
-    pool_strd = [None, None, None, None, None, None, None] # s
-    batch_norm = [False, True, False, True, False, False, False] # b
+        pool_sz = [(1, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
+    pool_strd = [None, None, None, None, None, None, None]  # s
+    batch_norm = [False, True, False, True, False, False, False]  # b
     dropout = [True, True, False, True, False, False, False]  # d # added
-    conv_spec = zip(n_filter, filter_sz, conv_strd, pool_sz, pool_strd, batch_norm, dropout)
+    conv_spec = zip(
+        n_filter, filter_sz, conv_strd, pool_sz,
+        pool_strd, batch_norm, dropout
+    )
 
     for l, m, c, n, s, b, d in conv_spec:
         if b:
@@ -93,11 +95,14 @@ def deep_cnn_2d_mtl(params):
         pool_sz = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
     else:
         conv_strd = [(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
-        pool_sz = [(1, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n        
-    pool_strd = [None, None, None, None, None, None, None] # s
-    batch_norm = [False, True, False, True, False, False, False] # b
+        pool_sz = [(1, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
+    pool_strd = [None, None, None, None, None, None, None]  # s
+    batch_norm = [False, True, False, True, False, False, False]  # b
     dropout = [True, True, False, True, False, False, False]  # d # added
-    conv_spec = zip(n_filter, filter_sz, conv_strd, pool_sz, pool_strd, batch_norm, dropout)
+    conv_spec = zip(
+        n_filter, filter_sz, conv_strd, pool_sz,
+        pool_strd, batch_norm, dropout
+    )
 
     for l, m, c, n, s, b, d in conv_spec:
         if b:
@@ -151,8 +156,8 @@ def shallow_cnn_2d(params):
     n_filter = [8, 16, 16, 32]  # l
     filter_sz = [(5, 5), (5, 5), (1, 1), (5, 5)]  # m
     pool_sz = [(3, 3), (3, 3), None, (3, 3)]  # n
-    pool_strd = [None, None, None, None] # s
-    batch_norm = [False, False, False, False] # b
+    pool_strd = [None, None, None, None]  # s
+    batch_norm = [False, False, False, False]  # b
     conv_spec = zip(n_filter, filter_sz, pool_sz, pool_strd, batch_norm)
 
     for l, m, n, s, b in conv_spec:

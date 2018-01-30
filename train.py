@@ -4,25 +4,35 @@ from data import prepare_batch, random_crop
 from sklearn.preprocessing import LabelBinarizer
 from utils import shuffle_ids
 
-def train(model, data, params, tblogger=None):
+
+def train(model, data, params, shuffle=True, tblogger=None):
     """"""
     # actual training
-    id_hash = {v:k for k, v in enumerate(data['ids'][:])}
+    id_hash = {v: k for k, v in enumerate(data['ids'][:])}
 
     # only for string labels
-    from sklearn.preprocessing import LabelBinarizer
     lb = LabelBinarizer().fit(data['y']['tg'][:])
 
     # params['iter'] = 0
     try:
         if params['verbose']:
-            epoch = trange(params['n_epochs'], desc='[Loss : -.--] Epoch', ncols=80)
+            epoch = trange(params['n_epochs'],
+                           desc='[Loss : -.--] Epoch',
+                           ncols=80)
         else:
             epoch = range(params['n_epochs'])
 
         for n in epoch:
-            trn_ids = shuffle_ids(params['split']['train'], id_hash)
-            val_ids = shuffle_ids(params['split']['valid'], id_hash)
+            if shuffle:
+                trn_ids = shuffle_ids(params['split']['train'], id_hash)
+                val_ids = shuffle_ids(params['split']['valid'], id_hash)
+            else:
+                trn_ids = [id_hash[x]
+                           for x in params['split']['train']
+                           if x in id_hash]
+                val_ids = [id_hash[x]
+                           for x in params['split']['valid']
+                           if x in id_hash]
 
             for i, X_, y_, target in prepare_batch(data, trn_ids, params, lb):
 
