@@ -78,6 +78,30 @@ def test(model, data, train_id, test_fn, params):
         out_df.to_csv('results/{}.csv'.format(train_id))
 
 
+def feature(model, data, params):
+    """"""
+    N = data['X'].shape[0]
+    Z = []  # feature
+    for i in trange(0, N, params['batch_sz'], ncols=80):
+        X = data['X'][i:i+params['batch_sz']]
+        M = data['mask'][i:i+params['batch_sz']]
+        feat = []
+        for j in range(0, X.shape[-2], params['dur'] / 2):
+            x = X[:, :, j:j+params['dur']]
+            if x.shape[-2] >= params['dur']:
+                feat.append(model['tg']['transform'](x))
+        feat = np.array(feat)
+        Z.append(
+            np.concatenate([
+                feat.mean(axis=0),
+                feat.std(axis=0),
+                np.median(feat, axis=0)
+            ], axis=-1)
+        )
+    Z = np.concatenate(Z, axis=0)
+    return Z
+
+
 def prepare_submission(train_id, test_fn, path='results/'):
     """"""
     net, mdl, params = load_check_point(train_id, path=path)

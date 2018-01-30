@@ -71,33 +71,33 @@ def ex(learning_rate, split, epsilon, beta, dur,
 if __name__ == "__main__":
     """"""
 
-    ## EXPERIMENT ###
-    results = {}
-    tid, f1, ll = ex(
-        learning_rate=0.001,
-        split='./data/fma_labels.split',
-        epsilon=1e-2,
-        beta=1e-5,
-        dur=44,
-        n_epochs=200,
-        batch_sz=64,
-        targets=[
-            {'name':'tg', 'n_out':16, 'prob': 1.}
-            # {'name':'po', 'n_out':40, 'prob': 1./2}
-            # {'name':'adm', 'n_out':40, 'prob': 1./3},
-            # {'name':'am', 'n_out':40, 'prob': 1./3}
-        ],
-        train_id='mtl_tg_3'
-    )
-    results[tid] = {'f1': f1, 'll': ll}
-    print results
+    # ## EXPERIMENT ###
+    # results = {}
+    # tid, f1, ll = ex(
+    #     learning_rate=0.001,
+    #     split='./data/fma_labels.split',
+    #     epsilon=1e-2,
+    #     beta=1e-5,
+    #     dur=44,
+    #     n_epochs=200,
+    #     batch_sz=64,
+    #     targets=[
+    #         {'name':'tg', 'n_out':16, 'prob': 1.}
+    #         # {'name':'po', 'n_out':40, 'prob': 1./2}
+    #         # {'name':'adm', 'n_out':40, 'prob': 1./3},
+    #         # {'name':'am', 'n_out':40, 'prob': 1./3}
+    #     ],
+    #     train_id='mtl_tg_3'
+    # )
+    # results[tid] = {'f1': f1, 'll': ll}
+    # print results
 
-    # ### CONTINUE TRAINING ###
-    # train_id = 'mtl_tg_adm'
-    # net, mdl, params = load_check_point(train_id, path='results/')
-    # logger = tblog.Logger('runs/{}'.format(train_id))
-    # with h5py.File(params['data_fn']) as hf:
-    #     train(mdl, hf, params, logger)
-    #     f1, ll = evaluate(mdl, hf, params)
-    #     save_check_point(net, params, train_id, path='results/')
-    # print {'f1': f1, 'll': ll}
+    ### CONTINUE TRAINING ###
+    train_id = 'mtl_tg_3'
+    net, mdl, params = load_check_point(train_id, path='results/')
+    logger = tblog.Logger('runs/{}'.format(train_id))
+    with h5py.File(params['data_fn']) as hf:
+        train(mdl, hf, params, logger)
+        f1, ll = evaluate(mdl, hf, params)
+        save_check_point(net, params, train_id, path='results/')
+    print {'f1': f1, 'll': ll}
