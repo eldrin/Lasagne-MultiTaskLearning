@@ -3,12 +3,11 @@ import pandas as pd
 import h5py
 from tqdm import trange
 from sklearn.metrics import (f1_score,
-                             accuracy_score,
                              classification_report,
                              confusion_matrix)
-from data import prepare_batch, random_crop
 from sklearn.preprocessing import LabelEncoder, LabelBinarizer
 from utils import load_check_point, shuffle_ids
+import fire
 
 
 def log_loss(y_true, y_pred):
@@ -141,3 +140,7 @@ def prepare_submission(train_id, test_fn, path='results/'):
     net, mdl, params = load_check_point(train_id, path=path)
     with h5py.File(params['data_fn']) as hf:
         test(mdl, hf, train_id, test_fn, params)
+
+
+if __name__ == "__main__":
+    fire.Fire(prepare_submission)
