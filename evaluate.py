@@ -113,7 +113,7 @@ def feature(model, data, params,
                 stat(feat, axis=0) for stat in agg],
                 axis=-1
             )
-            Y.append(y)
+            Y.extend(y)
             DSET.extend(dset)
             IDS.extend(ids)
         elif agg is None:
@@ -130,6 +130,10 @@ def feature(model, data, params,
         Y = np.concatenate(Y)
         DSET = np.concatenate(DSET)
         IDS = np.concatenate(IDS)
+    else:
+        Y = np.array(Y)
+        DSET = np.array(DSET)
+        IDS = np.array(IDS)
 
     Z = np.concatenate(Z, axis=0)
     return Z, Y, DSET, IDS

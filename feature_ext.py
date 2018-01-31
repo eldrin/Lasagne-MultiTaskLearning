@@ -17,7 +17,7 @@ def feature_ext(train_id, data_fn, out_path,
         Z, y, dset, ids = feature(mdl, hf, params, target, agg)  # feature
 
     print 'Saving output...'
-    out_fn = os.path.join(out_path, train_id + '.dat.gz')
+    out_fn = os.path.join(out_path, train_id + '_{}.dat.gz'.format(target))
     joblib.dump((Z, y, dset, ids), out_fn)
 
 
