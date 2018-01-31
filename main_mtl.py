@@ -90,24 +90,3 @@ def experiment(train_id, continue_ex=False):
 if __name__ == "__main__":
     """"""
     fire.Fire(experiment)
-    # # == EXPERIMENT == #
-    # results = {}
-    # tid, f1, ll = ex(
-    #     learning_rate=0.001,
-    #     split='./data/fma_labels.split',
-    #     epsilon=1e-8,
-    #     beta=1e-5,
-    #     dur=44,
-    #     n_epochs=400,
-    #     batch_sz=64,
-    #     targets=[
-    #         {'name': 'tg', 'n_out': 16, 'prob': 1./2},
-    #         # {'name': 'po', 'n_out': 40, 'prob': 1./2}
-    #         # {'name': 'adm', 'n_out': 40, 'prob': 1./3},
-    #         {'name': 'am', 'n_out': 40, 'prob': 1./2}
-    #     ],
-    #     shuffle=False,
-    #     train_id='mtl_tg_am_@2'
-    # )
-    # results[tid] = {'f1': f1, 'll': ll}
-    # print results
