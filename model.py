@@ -13,13 +13,13 @@ from lasagne import regularization as reg
 
 from sklearn.utils.class_weight import compute_class_weight
 
-from networks import deep_cnn_2d_mtl, deep_cnn_2d_mtl_at_2
+from networks import deep_cnn_2d_mtl_at_fc, deep_cnn_2d_mtl_at_2
 
 
 def network(params):
     """"""
-    # return deep_cnn_2d_mtl(params)
-    return deep_cnn_2d_mtl_at_2(params)
+    net = eval(params['network'])
+    return net(params)
 
 
 def build(layer_heads, params):

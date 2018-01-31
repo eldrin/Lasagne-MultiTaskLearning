@@ -17,7 +17,7 @@ from evaluate import evaluate, test
 SCALER_FN = './data/sclr_44k_logmel128.dat.gz'
 
 
-def ex(learning_rate, split, epsilon, beta, dur,
+def ex(net, learning_rate, split, epsilon, beta, dur,
        n_epochs, targets, batch_sz, shuffle, data_path,
        train_id=None):
     """"""
@@ -27,6 +27,7 @@ def ex(learning_rate, split, epsilon, beta, dur,
     logger = tblog.Logger('runs/{}'.format(train_id))
 
     params = {
+        'network': net,
         'data_fn': os.path.join(data_path, 'train.h5'),
         'scaler': SCALER_FN,
         'split_fn': split,

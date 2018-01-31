@@ -74,7 +74,7 @@ def deep_cnn_2d(params):
     return layers
 
 
-def deep_cnn_2d_mtl(params):
+def deep_cnn_2d_mtl_at_fc(params):
     """"""
     assert 'targets' in params
     nonlin = nl.elu
