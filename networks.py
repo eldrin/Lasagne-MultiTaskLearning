@@ -10,6 +10,67 @@ def swish(x):
     return x * nl.sigmoid(x)
 
 
+def deep_cnn_2d_vanilla(params):
+    """"""
+    nonlin = nl.rectify
+
+    layers = L.InputLayer((None, 1, params['dur'], 128))
+    print layers.output_shape
+
+    sclr = joblib.load(params['scaler'])
+    layers = L.standardize(
+        layers, sclr.mean_.astype(np.float32),
+        sclr.scale_.astype(np.float32), shared_axes=(0, 1, 2))
+    print layers.output_shape
+
+    n_filter = [16, 32, 64, 64, 128, 128, 256]  # l
+    filter_sz = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3), (3, 3), (1, 1)]  # m
+    if params['dur'] > 50:
+        conv_strd = [(2, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
+        pool_sz = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
+    else:
+        conv_strd = [(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
+        pool_sz = [(1, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
+    pool_strd = [None, None, None, None, None, None, None]  # s
+    batch_norm = [False, False, False, False, False, False, False]  # b
+    dropout = [False, False, False, False, False, False, False]  # d # added
+    conv_spec = zip(
+        n_filter, filter_sz, conv_strd, pool_sz,
+        pool_strd, batch_norm, dropout
+    )
+
+    for l, m, c, n, s, b, d in conv_spec:
+        if b:
+            layers = L.batch_norm(
+                L.Conv2DLayer(
+                    layers, l, m, stride=c,
+                    pad='same', nonlinearity=nonlin),
+            )
+        else:
+            layers = L.Conv2DLayer(
+                layers, l, m, stride=c,
+                pad='same', nonlinearity=nonlin
+            )
+        if n is not None:
+            layers = L.MaxPool2DLayer(layers, pool_size=n, stride=s)
+
+        if d:
+            layers = L.dropout(layers, p=0.1)
+
+        print layers.output_shape
+
+    layers = L.GlobalPoolLayer(layers)
+    print layers.output_shape
+
+    layers = L.DenseLayer(layers, 256, nonlinearity=nonlin)
+    print layers.output_shape
+
+    layers = L.DenseLayer(layers, 16, nonlinearity=nl.softmax)
+    print layers.output_shape
+
+    return layers
+
+
 def deep_cnn_2d(params):
     """"""
     nonlin = nl.elu
@@ -228,7 +289,7 @@ def deep_cnn_2d_mtl_at_2(params):
     return layer_heads
 
 
-def shallow_cnn_2d(params):
+def shallow_cnn_2d_vanilla(params):
     """"""
     layers = L.InputLayer((None, 1, params['dur'], 128))
     print layers.output_shape
@@ -257,10 +318,7 @@ def shallow_cnn_2d(params):
             layers = L.MaxPool2DLayer(layers, pool_size=n, stride=s)
         print layers.output_shape
 
-    # layers = L.batch_norm(
-    #     L.DenseLayer(layers, 64, nonlinearity=nl.rectify))
     layers = L.DenseLayer(layers, 64, nonlinearity=nl.rectify)
-    layers = L.dropout(layers)
     print layers.output_shape
 
     layers = L.DenseLayer(layers, 16, nonlinearity=nl.softmax)
