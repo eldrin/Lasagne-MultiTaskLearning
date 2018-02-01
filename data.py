@@ -3,13 +3,17 @@ from tqdm import trange
 from prefetch_generator import background
 
 
-def random_crop(X, M, Y, dur, offset=45):
+def random_crop(X, M, Y, dur, overlap=True, offset=45):
     """"""
     XX = []
     YY = []
     for x, m, y in zip(X, M, Y):
         if m - (dur + offset) > 0:
-            st = np.random.choice(m - (dur + offset))
+            if overlap:
+                choice_trg = m - (dur + offset)
+            else:
+                choice_trg = range(0, m, dur)
+            st = np.random.choice(choice_trg)
             XX.append(x[:, st:st + dur])
             YY.append(y)
         else:
@@ -26,18 +30,16 @@ def prepare_batch(data, ids, params, lb):
         size=1, replace=False,
         p=map(lambda x: x['prob'], params['targets']))[0]
     target = str(target)
-
     bs = params['batch_sz']
-    n_epochs = params['n_epochs']
 
     if params['verbose']:
-        t = trange(0, len(ids), params['batch_sz'], desc='Batch', ncols=80)
+        t = trange(0, len(ids), bs, desc='Batch', ncols=80)
     else:
-        t = range(0, len(ids), params['batch_sz'])
+        t = range(0, len(ids), bs)
 
     for i in t:
         # draw training samples
-        idx = sorted(ids[slice(i, i+params['batch_sz'])])
+        idx = sorted(ids[slice(i, i + bs)])
         if target == 'tg':
             y_ = lb.transform(data['y'][target][idx])
         else:
