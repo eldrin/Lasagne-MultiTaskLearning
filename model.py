@@ -1,19 +1,14 @@
 from functools import partial
-from collections import Counter
 
 import theano
 from theano import tensor as T
 
-import lasagne
 from lasagne import layers as L
-from lasagne import nonlinearities as nl
 from lasagne import objectives as obj
 from lasagne import updates
 from lasagne import regularization as reg
 
-from sklearn.utils.class_weight import compute_class_weight
-
-from networks import deep_cnn_2d_mtl_at_fc, deep_cnn_2d_mtl_at_2
+from networks import *
 
 
 def network(params):
@@ -42,9 +37,9 @@ def build(layer_heads, params):
 
         loss = loss_fn(o, y).mean()
         loss_vl = loss_fn(o_vl, y).mean()
-        wd_l2 = params['beta'] * reg.regularize_network_params(out_layer, reg.l2)
+        wd_l2 = reg.regularize_network_params(out_layer, reg.l2)
+        wd_l2 *= params['beta']
 
-        acc = obj.categorical_accuracy(o, y).mean()
         acc_vl = obj.categorical_accuracy(o_vl, y).mean()
 
         updates_ = updates.adam(
@@ -72,5 +67,7 @@ def build(layer_heads, params):
 
 def weighted_cce(predictions, targets, weights):
     """"""
-    return -T.sum(weights[None, :] * targets * T.log(predictions.clip(1e-10, 1.)),
-                  axis=predictions.ndim - 1)
+    return -T.sum(
+        weights[None, :] * targets * T.log(predictions.clip(1e-10, 1.)),
+        axis=predictions.ndim - 1
+    )

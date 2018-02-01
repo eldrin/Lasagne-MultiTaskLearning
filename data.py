@@ -3,7 +3,7 @@ from tqdm import trange
 from prefetch_generator import background
 
 
-def random_crop(X, M, Y, dur, overlap=True, offset=45):
+def random_crop(X, M, Y, dur, overlap=True, offset=22):
     """"""
     XX = []
     YY = []
@@ -12,7 +12,7 @@ def random_crop(X, M, Y, dur, overlap=True, offset=45):
             if overlap:
                 choice_trg = m - (dur + offset)
             else:
-                choice_trg = range(0, m, dur)
+                choice_trg = range(0, m - (dur + offset), dur)
             st = np.random.choice(choice_trg)
             XX.append(x[:, st:st + dur])
             YY.append(y)
@@ -45,5 +45,7 @@ def prepare_batch(data, ids, params, lb):
         else:
             y_ = data['y'][target][idx]
         X_, y_ = random_crop(
-            data['X'][idx], data['mask'][idx], y_, params['dur'])
+            data['X'][idx], data['mask'][idx], y_,
+            params['dur'], params['overlap_chunk']
+        )
         yield i, X_, y_, target

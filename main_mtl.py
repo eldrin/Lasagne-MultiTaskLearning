@@ -19,7 +19,7 @@ SCALER_FN = './data/sclr_44k_logmel128.dat.gz'
 
 def ex(net, learning_rate, split, epsilon, beta, dur,
        n_epochs, targets, batch_sz, shuffle, data_path,
-       train_id=None):
+       overlap_chunk=True, train_id=None):
     """"""
     if train_id is None:
         train_id = uuid.uuid4()
@@ -37,7 +37,8 @@ def ex(net, learning_rate, split, epsilon, beta, dur,
         'verbose': True,
         'n_epochs': n_epochs,
         'batch_sz': batch_sz,
-        'dur': dur,  # 5 seconds
+        'dur': dur,  # frames
+        'overlap_chunk': True if overlap_chunk else False,
         'report_every': 100,
         'class_weight': False,
         'prepare_submission': False,

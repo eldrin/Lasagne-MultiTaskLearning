@@ -68,7 +68,9 @@ def deep_cnn_2d_vanilla(params):
     layers = L.DenseLayer(layers, 16, nonlinearity=nl.softmax)
     print layers.output_shape
 
-    return layers
+    layer_head = {}
+    layer_head['tg'] = layers
+    return layer_head
 
 
 def deep_cnn_2d(params):
