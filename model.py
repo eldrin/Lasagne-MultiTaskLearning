@@ -9,7 +9,6 @@ from lasagne import updates
 from lasagne import regularization as reg
 
 from networks import *
-from utils import load_check_point
 
 
 def network(params):
@@ -66,7 +65,7 @@ def build(layer_heads, params):
     return fns, layer_heads
 
 
-def build_dist_feat_fnc(net, model_path, target,
+def build_dist_feat_fnc(net, target,
                         conv_feat_locs=[5, 10, 12, 17, 19],
                         fc_feat_locs=[24, 28]):
     """"""
