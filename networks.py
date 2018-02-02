@@ -32,7 +32,7 @@ def deep_cnn_2d_vanilla(params):
         conv_strd = [(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
         pool_sz = [(1, 2), (2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
     pool_strd = [None, None, None, None, None, None, None]  # s
-    batch_norm = [False, False, False, False, False, False, False]  # b
+    batch_norm = [True, True, True, True, True, True, True]  # b
     dropout = [False, False, False, False, False, False, False]  # d # added
     conv_spec = zip(
         n_filter, filter_sz, conv_strd, pool_sz,
@@ -60,9 +60,11 @@ def deep_cnn_2d_vanilla(params):
         print layers.output_shape
 
     layers = L.GlobalPoolLayer(layers)
+    layers = L.batch_norm(layers)
     print layers.output_shape
 
     layers = L.DenseLayer(layers, 256, nonlinearity=nonlin)
+    layers = L.batch_norm(layers)
     print layers.output_shape
 
     layers = L.DenseLayer(layers, 16, nonlinearity=nl.softmax)

@@ -9,6 +9,7 @@ from lasagne import updates
 from lasagne import regularization as reg
 
 from networks import *
+from utils import load_check_point
 
 
 def network(params):
@@ -63,6 +64,24 @@ def build(layer_heads, params):
             allow_input_downcast=True)
 
     return fns, layer_heads
+
+
+def build_dist_feat_fnc(net, model_path, target,
+                        conv_feat_locs=[5, 10, 12, 17, 19],
+                        fc_feat_locs=[24, 28]):
+    """"""
+    layers = L.get_all_layers(net[target])
+    assert len(layers) == 30  # only works for standard deep conv2d
+    conv_feat_locs = [5, 10, 12, 17, 19]
+    fc_feat_locs = [24, 28]
+    feat = [L.GlobalPoolLayer(layers[l]) for l in conv_feat_locs]
+    feat += [layers[l] for l in fc_feat_locs]
+    feat = L.ConcatLayer(feat, axis=1)
+
+    f_feat = {target: {}}
+    f_feat[target]['transform'] = theano.function(
+        layers[0].input_var, feat, allow_input_downcast=True)
+    return f_feat
 
 
 def weighted_cce(predictions, targets, weights):
