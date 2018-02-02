@@ -71,8 +71,6 @@ def build_dist_feat_fnc(net, target,
     """"""
     layers = L.get_all_layers(net[target])
     assert len(layers) == 30  # only works for standard deep conv2d
-    conv_feat_locs = [5, 10, 12, 17, 19]
-    fc_feat_locs = [24, 28]
     feat = [L.GlobalPoolLayer(layers[l]) for l in conv_feat_locs]
     feat += [layers[l] for l in fc_feat_locs]
     feat = L.ConcatLayer(feat, axis=1)
