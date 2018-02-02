@@ -79,7 +79,7 @@ def build_dist_feat_fnc(net, target,
 
     f_feat = {target: {}}
     f_feat[target]['transform'] = theano.function(
-        layers[0].input_var, feat, allow_input_downcast=True)
+        [layers[0].input_var], feat, allow_input_downcast=True)
     return f_feat
 
 
