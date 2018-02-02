@@ -76,10 +76,11 @@ def build_dist_feat_fnc(net, target,
     feat = [L.GlobalPoolLayer(layers[l]) for l in conv_feat_locs]
     feat += [layers[l] for l in fc_feat_locs]
     feat = L.ConcatLayer(feat, axis=1)
+    f = L.get_output(feat, deterministic=True)
 
     f_feat = {target: {}}
     f_feat[target]['transform'] = theano.function(
-        [layers[0].input_var], feat, allow_input_downcast=True)
+        [layers[0].input_var], f, allow_input_downcast=True)
     return f_feat
 
 
