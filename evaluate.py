@@ -12,7 +12,7 @@ import fire
 
 def log_loss(y_true, y_pred):
     """"""
-    return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
+    return -np.mean(np.sum(y_true * np.log(np.maximum(y_pred, 1e-8)), axis=1))
 
 
 def evaluate(model, data, params):
