@@ -37,7 +37,7 @@ def prepare_batch(X, y, bs, lb):
 
 
 def transfer(sources, learning_rate, epsilon, beta,
-             n_epochs, batch_sz, shuffle, train_id=None):
+             n_epochs, batch_sz, train_id=None):
     """"""
     if train_id is None:
         train_id = uuid.uuid4()
