@@ -96,7 +96,7 @@ def transfer(sources, learning_rate, epsilon, beta,
             for i, X_, y_ in prepare_batch(X, y, batch_sz, lb):
                 if iters % 100 == 0:
                     ix = np.random.choice(val_ix, batch_sz, replace=False)
-                    X_v, y_v = X[ix], y[ix]
+                    X_v, y_v = X[ix], lb.transform(y[ix])
 
                     c = model.cost(X_, y_).item()
                     cv = model.cost(X_v, y_v).item()
