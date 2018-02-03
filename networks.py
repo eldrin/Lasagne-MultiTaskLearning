@@ -10,6 +10,19 @@ def swish(x):
     return x * nl.sigmoid(x)
 
 
+def fcn_transfer(params):
+    """"""
+    assert 'inputs' in params
+    layers = L.InputLayer((None, 256 * len(params['inputs'])))
+    layers = L.dropout(layers)
+
+    layers = L.DenseLayer(layers, 1024, nonlinearity=nl.elu)
+    layers = L.dropout(layers)
+
+    layers = L.DenseLayer(layers, 16, nonlinearity=nl.softmax)
+    return layers
+
+
 def deep_cnn_2d_vanilla(params):
     """"""
     nonlin = nl.rectify
