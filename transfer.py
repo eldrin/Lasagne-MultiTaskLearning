@@ -12,7 +12,7 @@ from lasagne import objectives as obj
 from lasagne import regularization as reg
 from lasagne import updates
 
-from network import fcn_transfer
+from networks import fcn_transfer
 
 from sklearn.externals import joblib
 from sklearn.preprocessing import LabelBinarizer
