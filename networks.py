@@ -167,6 +167,11 @@ def deep_cnn_2d_mtl_at_fc(params):
     print layers.output_shape
 
     n_filter = [16, 32, 64, 64, 128, 256, 256]  # l
+    if 'kernel_multiplier' in params:
+        n_filter = map(
+            lambda x: x * params['kernel_multiplier'],
+            n_filter
+        )
     filter_sz = [(5, 5), (3, 3), (3, 3), (3, 3), (3, 3), (3, 3), (1, 1)]  # m
     if params['dur'] > 50:
         conv_strd = [(2, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
@@ -235,6 +240,11 @@ def deep_cnn_2d_mtl_at_2(params):
     print layers.output_shape
 
     n_filter = [32, 64, 64, 128, 256, 256]  # l
+    if 'kernel_multiplier' in params:
+        n_filter = map(
+            lambda x: x * params['kernel_multiplier'],
+            n_filter
+        )
     filter_sz = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3), (1, 1)]  # m
     if params['dur'] > 50:
         conv_strd = [(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
