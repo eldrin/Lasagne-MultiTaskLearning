@@ -24,7 +24,7 @@ from tqdm import trange, tqdm
 import fire
 
 
-logging.basicConfig('results.log', level=logging.INFO)
+logging.basicConfig(filename='results.log', level=logging.INFO)
 SCALER_FN = './data/sclr_44k_logmel128.dat.gz'
 
 
