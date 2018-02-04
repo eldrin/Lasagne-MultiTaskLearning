@@ -1,5 +1,6 @@
 import uuid
 import logging
+import copy
 import json
 from collections import namedtuple
 import tensorboard_logger as tblog
@@ -81,11 +82,15 @@ def transfer(sources, learning_rate, epsilon, beta,
     D = [joblib.load(fn) for fn in sources]
 
     # prepare data
-    X = np.concatenate([d[0] for d in D], axis=1)
-    y = D[0][1]
-    lb = LabelBinarizer().fit(y)
     trn_ix = np.where(D[0][2] == 'train')[0]
     val_ix = np.where(D[0][2] == 'valid')[0]
+    ids_map = copy.deepcopy(D[0][3])
+
+    y = copy.deepcopy(D[0][1])
+    X = np.concatenate([d[0] for d in D], axis=1)
+    lb = LabelBinarizer().fit(y)
+
+    del D
 
     # TRAIN!
     iters = 0
@@ -119,13 +124,13 @@ def transfer(sources, learning_rate, epsilon, beta,
         print('User Stopped!')
 
     # evaluate
-    uniq_ix_set = list(set(D[0][3][val_ix]))
+    uniq_ix_set = list(set(ids_map[val_ix]))
     Y_pred = []
     y_true = []
     Xvl = X[val_ix]
     yvl = y[val_ix]
     for i in tqdm(uniq_ix_set):
-        ix = np.where(D[0][3][val_ix] == i)[0]
+        ix = np.where(ids_map[val_ix] == i)[0]
         Y_pred.append(model.predict(Xvl[ix]).mean(axis=0))
         y_true.append(yvl[ix][0])
     Y_true = lb.transform(y_true)
