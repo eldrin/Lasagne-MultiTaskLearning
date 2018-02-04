@@ -1,4 +1,5 @@
 import uuid
+import logging
 import json
 from collections import namedtuple
 import tensorboard_logger as tblog
@@ -23,6 +24,7 @@ from tqdm import trange, tqdm
 import fire
 
 
+logging.basicConfig('results.log', level=logging.INFO)
 SCALER_FN = './data/sclr_44k_logmel128.dat.gz'
 
 
@@ -142,7 +144,7 @@ def main(train_id):
     """"""
     params = json.load(open('config/{}.json'.format(train_id)))
     tid, f1, ll = transfer(**params)
-
+    logging.info('{} - f1 - {:.5f} - ll - {:.5f}'.format(tid, f1, ll))
     print {'f1': f1, 'll': ll}
 
 
