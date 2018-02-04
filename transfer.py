@@ -117,7 +117,7 @@ def transfer(sources, learning_rate, epsilon, beta,
         print('User Stopped!')
 
     # evaluate
-    uniq_ix_set = list(set(D[0][3]))
+    uniq_ix_set = list(set(D[0][3][val_ix]))
     Y_pred = []
     y_true = []
     Xvl = X[val_ix]
