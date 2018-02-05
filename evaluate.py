@@ -79,11 +79,14 @@ def feature(model, data, params,
             target='tg', agg=[np.mean, np.std, np.median]):
     """"""
     id_hash = {v: k for k, v in enumerate(data['ids'][:])}
-    trn_ids = [(id_hash[int(i)], 'train') for i in params['split']['train']
-               if int(i) in id_hash]
-    val_ids = [(id_hash[int(i)], 'valid') for i in params['split']['valid']
-               if int(i) in id_hash]
-    ix_dset_map = dict(sorted(trn_ids + val_ids, key=lambda x: x[0]))
+    if 'y' in data:
+        trn_ids = [(id_hash[int(i)], 'train') for i in params['split']['train']
+                   if int(i) in id_hash]
+        val_ids = [(id_hash[int(i)], 'valid') for i in params['split']['valid']
+                   if int(i) in id_hash]
+        ix_dset_map = dict(sorted(trn_ids + val_ids, key=lambda x: x[0]))
+    else:
+        ix_dset_map = dict([(v, 'test') for k, v in id_hash.items()])
 
     N = len(ix_dset_map)
     bs = params['batch_sz']
