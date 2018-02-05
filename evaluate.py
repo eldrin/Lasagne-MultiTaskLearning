@@ -103,7 +103,7 @@ def feature(model, data, params,
         if 'y' in data:
             y = data['y']['tg'][slc]
         else:
-            y = None
+            y = [None] * X.shape[0]
 
         feat = []
         for j in range(0, X.shape[-2], params['dur'] / 2):
