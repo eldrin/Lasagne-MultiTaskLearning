@@ -1,10 +1,13 @@
 import uuid
+import os
+import glob
 import logging
 import copy
 import json
 from collections import namedtuple
 import tensorboard_logger as tblog
 import numpy as np
+import pandas as pd
 
 import theano
 from theano import tensor as T
@@ -27,6 +30,7 @@ import fire
 
 logging.basicConfig(filename='results.log', level=logging.INFO)
 SCALER_FN = './data/sclr_44k_logmel128.dat.gz'
+TEST_ROOT = None  # need to fill in the path after manual feature process
 
 
 @background()
@@ -141,9 +145,23 @@ def transfer(sources, learning_rate, epsilon, beta,
         np.sum(Y_true * np.log(np.maximum(Y_pred, 1e-8)), axis=1)
     )
 
+    # TODO: this is under-dev functionality. not generally working
     if test_sources is not None:
         del X, y  # delete training data from memory
-        # load test data
+        # process test data
+        test_fns = glob.glob(os.path.join(TEST_ROOT, '*.npy'))
+        tids = map(lambda fn: os.path.basename(fn).split('.')[0],
+                   test_fns)
+        Y_pred = []
+        for fn in tqdm(test_fns, ncols=80):
+            X = np.load(fn)
+            Y_pred.append(model.predict(X).mean(axis=0))
+
+        out_df = pd.DataFrame(
+            Y_pred, columns=lb.classes_, index=tids)
+        out_df.index.name = 'file_id'
+        out_df.sort_index(inplace=True)
+        out_df.to_csv('results/{}.csv'.format(train_id))
 
     # return result
     return train_id, f1, ll
