@@ -40,7 +40,7 @@ def prepare_batch(X, y, bs, lb):
 
 
 def transfer(sources, learning_rate, epsilon, beta,
-             n_epochs, batch_sz, train_id=None):
+             n_epochs, batch_sz, train_id=None, test_sources=False):
     """"""
     if train_id is None:
         train_id = uuid.uuid4()
@@ -140,6 +140,10 @@ def transfer(sources, learning_rate, epsilon, beta,
     ll = -np.mean(
         np.sum(Y_true * np.log(np.maximum(Y_pred, 1e-8)), axis=1)
     )
+
+    if test_sources is not None:
+        del X, y  # delete training data from memory
+        # load test data
 
     # return result
     return train_id, f1, ll

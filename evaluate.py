@@ -101,6 +101,7 @@ def feature(model, data, params,
         else:
             ids = range(i, i + bs)
         dset = map(lambda j: ix_dset_map[j], ids)
+        ids = data['ids'][ids]  # convert from index to real ids
         X = data['X'][slc]
         M = data['mask'][slc]
         if 'y' in data:
