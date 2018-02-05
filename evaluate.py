@@ -85,7 +85,6 @@ def feature(model, data, params,
                if int(i) in id_hash]
     ix_dset_map = dict(sorted(trn_ids + val_ids, key=lambda x: x[0]))
 
-    # N = data['X'].shape[0]
     N = len(ix_dset_map)
     bs = params['batch_sz']
     Z = []  # feature
@@ -101,7 +100,11 @@ def feature(model, data, params,
         dset = map(lambda j: ix_dset_map[j], ids)
         X = data['X'][slc]
         M = data['mask'][slc]
-        y = data['y']['tg'][slc]
+        if 'y' in data:
+            y = data['y']['tg'][slc]
+        else:
+            y = None
+
         feat = []
         for j in range(0, X.shape[-2], params['dur'] / 2):
             x = X[:, :, j:j+params['dur']]
