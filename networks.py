@@ -211,8 +211,12 @@ def deep_cnn_2d_mtl_at_fc(params):
     layers = L.dropout(layers)  # added
     print layers.output_shape
 
+    if 'kernel_multiplier' in params:
+        n_hid = 256 * params['kernel_multiplier']
+    else:
+        n_hid = 256
     layers = L.batch_norm(
-        L.DenseLayer(layers, 256, nonlinearity=nonlin))
+        L.DenseLayer(layers, n_hid, nonlinearity=nonlin))
     layers = L.dropout(layers)
     print layers.output_shape
 
@@ -261,7 +265,11 @@ def deep_cnn_2d_mtl_at_2(params):
     )
 
     # Shared first layer
-    layers = L.Conv2DLayer(layers, 16, (5, 5), stride=(1, 1),
+    if 'kernel_multiplier' in params:
+        n_1st_ker = 16 * params['kernel_multiplier']
+    else:
+        n_1st_ker = 16
+    layers = L.Conv2DLayer(layers, n_1st_ker, (5, 5), stride=(1, 1),
                            pad='same', nonlinearity=nonlin)
     layers = L.MaxPool2DLayer(layers, pool_size=(1, 2))
     layers = L.dropout(layers, p=0.1)
@@ -299,10 +307,14 @@ def deep_cnn_2d_mtl_at_2(params):
             layer_heads[target['name']])  # added
         print layer_heads[target['name']].output_shape
 
+        if 'kernel_multiplier' in params:
+            n_hid = 256 * params['kernel_multiplier']
+        else:
+            n_hid = 256
         layer_heads[target['name']] = L.batch_norm(
             L.DenseLayer(
                 layer_heads[target['name']],
-                256, nonlinearity=nonlin))
+                n_hid, nonlinearity=nonlin))
         layer_heads[target['name']] = L.dropout(
             layer_heads[target['name']])
         print layer_heads[target['name']].output_shape
@@ -312,109 +324,6 @@ def deep_cnn_2d_mtl_at_2(params):
             target['n_out'],
             nonlinearity=nl.softmax)
         print target['name'], layer_heads[target['name']].output_shape
-
-    return layer_heads
-
-
-def deep_cnn_2d_mtl_at_2_fusion_for_main(params):
-    """"""
-    assert 'targets' in params
-    nonlin = nl.elu
-    main_target_name = 'tg'
-
-    layers = L.InputLayer((None, 1, params['dur'], 128))
-    print layers.output_shape
-
-    sclr = joblib.load(params['scaler'])
-    layers = L.standardize(
-        layers, sclr.mean_.astype(np.float32),
-        sclr.scale_.astype(np.float32), shared_axes=(0, 1, 2))
-    print layers.output_shape
-
-    n_filter = [32, 64, 64, 128, 256, 256]  # l
-    filter_sz = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3), (1, 1)]  # m
-    if params['dur'] > 50:
-        conv_strd = [(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
-        pool_sz = [(2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
-    else:
-        conv_strd = [(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1)]  # c
-        pool_sz = [(2, 2), (2, 2), (2, 2), (2, 2), None, None]  # n
-    pool_strd = [None, None, None, None, None, None]  # s
-    batch_norm = [True, False, True, False, False, False]  # b
-    dropout = [True, False, True, False, False, False]  # d # added
-    conv_spec = zip(
-        n_filter, filter_sz, conv_strd, pool_sz,
-        pool_strd, batch_norm, dropout
-    )
-
-    # Shared first layer
-    layers = L.Conv2DLayer(layers, 16, (5, 5), stride=(1, 1),
-                           pad='same', nonlinearity=nonlin)
-    layers = L.MaxPool2DLayer(layers, pool_size=(1, 2))
-    layers = L.dropout(layers, p=0.1)
-
-    layer_heads = OrderedDict()
-    for target in params['targets']:
-        first_trgt_spec_layer = True  # n_layer checker
-        for l, m, c, n, s, b, d in conv_spec:
-            if first_trgt_spec_layer:
-                layer_heads[target['name']] = layers
-                first_trgt_spec_layer = False
-            if b:
-                layer_heads[target['name']] = L.batch_norm(
-                    L.Conv2DLayer(
-                        layer_heads[target['name']], l, m, stride=c,
-                        pad='same', nonlinearity=nonlin),
-                )
-            else:
-                layer_heads[target['name']] = L.Conv2DLayer(
-                    layer_heads[target['name']], l, m, stride=c,
-                    pad='same', nonlinearity=nonlin
-                )
-            if n is not None:
-                layer_heads[target['name']] = L.MaxPool2DLayer(
-                    layer_heads[target['name']], pool_size=n, stride=s)
-
-            if d:
-                layer_heads[target['name']] = L.dropout(
-                    layer_heads[target['name']], p=0.1)
-            print layer_heads[target['name']].output_shape
-
-        layer_heads[target['name']] = L.batch_norm(
-            L.GlobalPoolLayer(layer_heads[target['name']]))
-        layer_heads[target['name']] = L.dropout(
-            layer_heads[target['name']])  # added
-        print layer_heads[target['name']].output_shape
-
-        layer_heads[target['name']] = L.batch_norm(
-            L.DenseLayer(
-                layer_heads[target['name']],
-                256, nonlinearity=nonlin))
-        layer_heads[target['name']] = L.dropout(
-            layer_heads[target['name']])
-        print layer_heads[target['name']].output_shape
-
-        if target['name'] == main_target_name:
-            continue
-        else:
-            layer_heads[target['name']] = L.DenseLayer(
-                layer_heads[target['name']],
-                target['n_out'],
-                nonlinearity=nl.softmax)
-            print target['name'], layer_heads[target['name']].output_shape
-
-    main_target = filter(lambda t: t['name'] == main_target_name, params['targets'])
-    side_targets = filter(lambda t: t['name'] != main_target_name, params['targets'])
-    layer_heads[main_target[0]['name']] = L.DenseLayer(
-        L.ConcatLayer(
-            [L.get_all_layers(layer_heads[t['name']])[-2]  # fc for side trg
-             for t in side_targets],
-            axis=1
-        ),
-        main_target[0]['n_out'], nonlinearity=nl.softmax
-    )
-    print(main_target[0]['name'],
-          layer_heads[main_target[0]['name']].output_shoutput_shape)
 
     return layer_heads
 
