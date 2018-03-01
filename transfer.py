@@ -44,7 +44,7 @@ def prepare_batch(X, y, bs, lb):
 
 
 def transfer(sources, learning_rate, epsilon, beta,
-             n_epochs, batch_sz, train_id=None, test_sources=False):
+             n_epochs, batch_sz, train_id=None, test_sources=None):
     """"""
     if train_id is None:
         train_id = uuid.uuid4()
@@ -53,7 +53,8 @@ def transfer(sources, learning_rate, epsilon, beta,
     logger = tblog.Logger('runs/{}'.format(train_id))
 
     # launch model
-    net = fcn_transfer({'inputs': sources})
+    # net = fcn_transfer({'inputs': sources})
+    net = fcn_transfer({'inputs': range(2)})
     input = T.matrix('input')
     target = T.matrix('target')
     o = L.get_output(net, inputs=input)
